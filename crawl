@@ -1,0 +1,18 @@
+#!/bin/bash
+
+token=""
+
+limit=5
+
+while read repo_url
+do 
+	short=$(echo $repo_url | cut -d '/' -f 4-5)
+
+	urls=$(curl -s -H "Authorization: token $token" "https://api.github.com/repos/$short/git/trees/master?recursive=1" | jq -r '.tree?[]?.path?')
+
+	for url in $(echo "$urls")
+	do
+		echo "https://raw.githubusercontent.com/$short/master/$url"
+	done
+
+done 

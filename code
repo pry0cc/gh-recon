@@ -1,0 +1,25 @@
+#!/bin/bash
+
+token=""
+
+type="search/code"
+
+if [[ "$1" != "" ]];
+then
+	type="$1"
+fi
+
+
+while read u
+do 
+	count="100"
+	page=1
+
+	while [[ "$count" -gt "99" ]]
+	do
+		urls=$(curl -s -H "Authorization: token $token" "https://api.github.com/$type?q=$u&per_page=100&page=$page")
+		page=$((page+1))
+		echo "$urls"
+		count="$(echo "$urls" | wc -l | awk "{ print $1 }")"
+	done
+done 

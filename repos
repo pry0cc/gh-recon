@@ -1,0 +1,26 @@
+#!/bin/bash
+
+token=""
+
+type="orgs"
+
+if [[ "$1" != "" ]];
+then
+	type="$1"
+fi
+
+
+while read u
+do 
+	count="100"
+	page=1
+
+	while [[ "$count" -gt "99" ]]
+	do
+		urls=$(curl -s -H "Authorization: token $token" "https://api.github.com/$type/$u/repos?per_page=100&page=$page")
+		page=$((page+1))
+		echo "$urls" | jq -r '.[]?.html_url?' 
+		count="$(echo "$urls" | jq -r '.[]?.html_url?' | wc -l | awk "{ print $1 }")"
+
+	done
+done 

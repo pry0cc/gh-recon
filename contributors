@@ -1,0 +1,22 @@
+#!/bin/bash
+
+token=""
+
+limit=35
+
+while read repo_url
+do 
+	count="100"
+	page=1
+	
+	short=$(echo $repo_url | cut -d '/' -f 4-5)
+
+	while [[ "$count" -gt "99" ]]
+	do
+		urls=$(curl -s -H "Authorization: token $token" "https://api.github.com/repos/$short/contributors?per_page=100&page=$page")
+		page=$((page+1))
+		echo "$urls" | jq -r '.[].login' | head -n $limit
+		count="$(echo "$urls" | jq -r '.[].login' | wc -l | awk "{ print $1 }")"
+
+	done
+done 
